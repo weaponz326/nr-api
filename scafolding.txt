@@ -1,0 +1,19 @@
++ projects
+	+ personal (P)
+		+ users (A)
+		+ suite modules
+			+ portal (A)
+			+ settings (A)
+			+ calendar (A)
+			+ budget (A)
+			+ notes (A)
+			+ accounts (A)
+			+ tasks (A)
+    + restaurant
+    + school
+    + association
+    + enterprise
+    + hotel
+    + hospital
+    + shop
+    + production

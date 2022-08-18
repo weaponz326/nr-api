@@ -28,10 +28,13 @@ class CustomBaseModel(models.Model):
         self.save()
 
 class User(AbstractUser, CustomBaseModel):
+    username = None
+    email = models.EmailField(unique=True)
     location = models.CharField(max_length=255)
     about = models.TextField()
     photo = models.FileField(null=True, blank=True, upload_to=users_upload_path)
 
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'location', 'about']
 
     def __str__(self):
