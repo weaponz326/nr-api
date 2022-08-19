@@ -1,13 +1,17 @@
 from rest_framework import serializers
 
-from .models import User
+from .models import CustomBaseModel, User
 
 
-class UserSerializer(serializers.ModelSerializer):
+class CustomBaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomBaseModel
+        fields = ['id', 'created_at', 'updated_at']
+
+class UserSerializer(CustomBaseSerializer):
     class Meta:
         model = User
         fields = [
-            'id',
             'email',
             'first_name',
             'last_name',
