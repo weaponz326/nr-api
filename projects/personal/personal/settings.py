@@ -45,6 +45,13 @@ INSTALLED_APPS = [
     'djoser',
     
     'users',
+    'modules.portal',
+    'modules.settings',
+    'modules.calendars',
+    'modules.budget',
+    'modules.notes',
+    'modules.account',
+    'modules.tasks',
 ]
 
 MIDDLEWARE = [
