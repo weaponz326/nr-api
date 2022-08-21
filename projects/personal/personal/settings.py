@@ -47,10 +47,10 @@ INSTALLED_APPS = [
     'users',
     'modules.portal',
     'modules.settings',
-    'modules.calendars',
+    'modules.calendarx',
     'modules.budget',
     'modules.notes',
-    'modules.account',
+    'modules.accountx',
     'modules.tasks',
 ]
 

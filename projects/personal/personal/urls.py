@@ -28,9 +28,9 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
 
     path('users/', include('users.urls')),
-    path('module-calendar/', include('modules.calendars.urls')),
+    path('module-calendar/', include('modules.calendarx.urls')),
     path('module-notes/', include('modules.notes.urls')),
-    path('module-accounts/', include('modules.account.urls')),
+    path('module-accounts/', include('modules.accountx.urls')),
     path('module-budget/', include('modules.budget.urls')),
     path('module-tasks/', include('modules.tasks.urls')),
     path('module-portal/', include('modules.portal.urls')),
