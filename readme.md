@@ -29,9 +29,12 @@ To create an app for a project, navigate to the root of the project containing t
 py manage.py startapp app_name
 ```
 
-To create an app in a sub directory, specify the path to the directory as an option
+To create an app in a sub directory, first create the directory, and specify the path to the directory as an option
 ```bash
-py manage.py startapp apps/app_name
+py manage.py startapp app_name folder_1/folder_2
 ```
-
+Or create the directory, and navigate to the directory and use the relative path of `manage.py` from there
+```bash
+py ../../manage.py startapp app_name
+```
 
