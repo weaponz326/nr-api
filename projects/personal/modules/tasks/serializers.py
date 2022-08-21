@@ -27,5 +27,6 @@ class TaskItemSerializer(serializers.ModelSerializer):
             'description',
             'start_date',
             'end_date',
+            'priority',
             'status',
         ]

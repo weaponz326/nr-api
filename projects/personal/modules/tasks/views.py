@@ -15,7 +15,7 @@ from users.paginations import TablePagination
 
 class TaskGroupView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['task_item', 'priority', 'start_date', 'end_date', 'status']
+    ordering_fields = ['task_group', 'created_at']
     ordering = ['-pkid']
 
     def get(self, request, format=None):
@@ -56,7 +56,7 @@ class TaskGroupDetailView(APIView):
 
 class AllTaskItemView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['task_group', 'created_at']
+    ordering_fields = ['task_group', 'task_item', 'priority', 'start_date', 'end_date', 'status']
     ordering = ['-pkid']
 
     def get(self, request, format=None):

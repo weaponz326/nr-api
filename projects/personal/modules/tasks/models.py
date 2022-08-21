@@ -18,6 +18,7 @@ class TaskItem(CustomBaseModel):
     description = models.TextField(null=True, blank=True)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
+    priority = models.CharField(max_length=16, null=True)
     status = models.BooleanField(null=True)
 
     def __str__(self):
