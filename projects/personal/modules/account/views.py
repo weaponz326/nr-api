@@ -1,5 +1,3 @@
-from django.shortcuts import render
-from django.db.models import Count
 from django.db.models.functions import TruncDate
 
 from django_filters.rest_framework import DjangoFilterBackend

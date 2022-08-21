@@ -55,9 +55,9 @@ class CalendarDetailView(APIView):
 # -------------------------------------------------------------------------------------
 # schedule
 
-class ScheduleView(APIView, TablePagination):
+class AllScheduleView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['schedule_name', 'start_date', 'end_date', 'status']
+    ordering_fields = ['schedule_name', 'calendar', 'start_date', 'end_date', 'status']
     ordering = ['-pkid']
 
     def get(self, request, format=None):
@@ -65,6 +65,13 @@ class ScheduleView(APIView, TablePagination):
         schedule = Schedule.objects.filter(calendar=calendar)
         results = self.paginate_queryset(schedule, request, view=self)
         serializer = ScheduleSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
+
+class ScheduleView(APIView, TablePagination):
+    def get(self, request, format=None):
+        calendar = self.request.query_params.get('calendar', None)
+        schedule = Schedule.objects.filter(calendar=calendar)
+        serializer = ScheduleSerializer(schedule, many=True)
         return self.get_paginated_response(serializer.data)
 
     def post(self, request, format=None):

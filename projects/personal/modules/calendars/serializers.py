@@ -4,7 +4,6 @@ from .models import Calendar, Schedule
 
 
 class CalendarSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Calendar
         fields = [
@@ -16,6 +15,7 @@ class CalendarSerializer(serializers.ModelSerializer):
         ]
 
 class ScheduleSerializer(serializers.ModelSerializer):
+    calendar = CalendarSerializer()
 
     class Meta:
         model = Schedule
