@@ -1,3 +1,15 @@
 from django.contrib import admin
 
+from .models import ExtendedProfile, Invitation
+
+
 # Register your models here.
+
+class ExtendedProfileAdmin(admin.ModelAdmin):
+    list_display = ('id', 'updated_at', 'gender', 'phone', 'country')
+
+class InvitationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'created_at', 'updated_at', 'inviter', 'inviter_type', 'invitation_status')
+
+admin.site.register(ExtendedProfile, ExtendedProfileAdmin)
+admin.site.register(Invitation, InvitationAdmin)
