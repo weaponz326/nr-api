@@ -61,8 +61,8 @@ class AllScheduleView(APIView, TablePagination):
     ordering = ['-pkid']
 
     def get(self, request, format=None):
-        calendar = self.request.query_params.get('calendar', None)
-        schedule = Schedule.objects.filter(calendar=calendar)
+        user = self.request.query_params.get('user', None)
+        schedule = Schedule.objects.filter(calendar__user=user)
         results = self.paginate_queryset(schedule, request, view=self)
         serializer = ScheduleSerializer(results, many=True)
         return self.get_paginated_response(serializer.data)
