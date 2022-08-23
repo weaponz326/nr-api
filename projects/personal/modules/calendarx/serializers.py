@@ -15,6 +15,21 @@ class CalendarSerializer(serializers.ModelSerializer):
         ]
 
 class ScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Schedule
+        fields = [
+            'id',
+            'updated_at',
+            'calendar',
+            'schedule_name',
+            'description',
+            'start_date',
+            'end_date',
+            'location',
+            'status',
+        ]
+
+class ScheduleNestedSerializer(serializers.ModelSerializer):
     calendar = CalendarSerializer()
 
     class Meta:

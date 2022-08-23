@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.filters import OrderingFilter
 
 from .models import TaskGroup, TaskItem
-from .serializers import TaskGroupSerializer, TaskItemSerializer
+from .serializers import TaskGroupSerializer, TaskItemNestedSerializer, TaskItemSerializer
 from users.paginations import TablePagination
 
 
@@ -63,7 +63,7 @@ class AllTaskItemView(APIView, TablePagination):
         user = self.request.query_params.get('user', None)
         task_item = TaskItem.objects.filter(task_group__user=user)
         results = self.paginate_queryset(task_item, request, view=self)
-        serializer = TaskItemSerializer(results, many=True)
+        serializer = TaskItemNestedSerializer(results, many=True)
         return self.get_paginated_response(serializer.data)
 
 class TaskItemView(APIView):

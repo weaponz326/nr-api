@@ -17,6 +17,19 @@ class AccountSerializer(serializers.ModelSerializer):
         ]
 
 class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = [
+            'id',
+            'updated_at',
+            'account',
+            'transaction_date',
+            'description',
+            'amount',
+            'transaction_type',
+        ]
+
+class TransactionNestedSerializer(serializers.ModelSerializer):
     account = AccountSerializer()
 
     class Meta:

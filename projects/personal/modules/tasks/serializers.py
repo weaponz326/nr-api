@@ -14,7 +14,22 @@ class TaskGroupSerializer(serializers.ModelSerializer):
             'task_group',
         ]
 
-class TaskItemSerializer(serializers.ModelSerializer):
+class TaskItemSerializer(serializers.ModelSerializer):    
+    class Meta:
+        model = TaskItem
+        fields = [
+            'id',
+            'updated_at',
+            'task_group',
+            'task_item',
+            'description',
+            'start_date',
+            'end_date',
+            'priority',
+            'status',
+        ]
+
+class TaskItemNestedSerializer(serializers.ModelSerializer):
     task_group = TaskGroupSerializer()
     
     class Meta:

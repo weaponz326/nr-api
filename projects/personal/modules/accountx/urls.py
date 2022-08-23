@@ -8,5 +8,5 @@ urlpatterns = [
     path('account/<id>', views.AccountDetailView.as_view()),
     path('transaction/', views.TransactionView.as_view()),
     path('transaction/<id>', views.TransactionDetailView.as_view()),
-    path('all-transactions/', views.AllTransactionsView.as_view()),
+    path('all-transaction/', views.AllTransactionsView.as_view()),
 ]

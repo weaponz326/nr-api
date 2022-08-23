@@ -7,7 +7,7 @@ from rest_framework import generics, status
 from rest_framework.filters import OrderingFilter
 
 from .models import Calendar, Schedule
-from .serializers import CalendarSerializer, ScheduleSerializer
+from .serializers import CalendarSerializer, ScheduleNestedSerializer, ScheduleSerializer
 from users.paginations import TablePagination
 
 
@@ -64,7 +64,7 @@ class AllScheduleView(APIView, TablePagination):
         user = self.request.query_params.get('user', None)
         schedule = Schedule.objects.filter(calendar__user=user)
         results = self.paginate_queryset(schedule, request, view=self)
-        serializer = ScheduleSerializer(results, many=True)
+        serializer = ScheduleNestedSerializer(results, many=True)
         return self.get_paginated_response(serializer.data)
 
 class ScheduleView(APIView, TablePagination):

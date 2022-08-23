@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.filters import OrderingFilter
 
 from .models import Account, Transaction
-from .serializers import AccountSerializer, TransactionSerializer
+from .serializers import AccountSerializer, TransactionNestedSerializer, TransactionSerializer
 from users.paginations import TablePagination
 
 
@@ -97,5 +97,5 @@ class AllTransactionsView(APIView, TablePagination):
         user = self.request.query_params.get('user', None)
         account = Transaction.objects.filter(account__user=user)
         results = self.paginate_queryset(account, request, view=self)
-        serializer = TransactionSerializer(results, many=True)
+        serializer = TransactionNestedSerializer(results, many=True)
         return self.get_paginated_response(serializer.data)
