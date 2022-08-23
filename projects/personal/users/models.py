@@ -20,7 +20,7 @@ class CustomBaseModel(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
 
-    objects = CustomBaseManager
+    objects = CustomBaseManager()
 
     class Meta:
         abstract = True
