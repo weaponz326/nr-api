@@ -13,6 +13,6 @@ class NoteSerializer(serializers.ModelSerializer):
             'updated_at',
             'created_at',
             'user',
-            'subject',
+            'title',
             'body',
         ]

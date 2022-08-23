@@ -7,7 +7,7 @@ from users.models import CustomBaseModel, User
 
 class Note(CustomBaseModel):
     user = models.ForeignKey(User, to_field='id', on_delete=models.DO_NOTHING)
-    subject = models.CharField(null=True, blank=True, max_length=256)
+    title = models.CharField(null=True, blank=True, max_length=256)
     body = models.TextField(null=True, blank=True)
 
     def __str__(self):

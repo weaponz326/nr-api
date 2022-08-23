@@ -15,7 +15,7 @@ from users.paginations import TablePagination
 
 class NoteView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['subject', 'created_at', 'updated_at']
+    ordering_fields = ['title', 'created_at', 'updated_at']
     ordering = ['-pkid']
 
     def get(self, request, format=None):
