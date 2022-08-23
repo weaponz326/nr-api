@@ -6,4 +6,5 @@ from . import views
 urlpatterns = [
     path('note/', views.NoteView.as_view()),
     path('note/<id>', views.NoteDetailView.as_view()),
+    path('note-search/', views.NoteSearchView.as_view()),
 ]

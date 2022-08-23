@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, generics, filters
 from rest_framework.filters import OrderingFilter
 
 from .models import Note
@@ -50,3 +50,9 @@ class NoteDetailView(APIView):
         note = Note.objects.get(id=id)
         note.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class NoteSearchView(generics.ListAPIView):
+    queryset = Note.objects.all()
+    serializer_class = NoteSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'body']
