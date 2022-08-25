@@ -1,4 +1,7 @@
+import datetime
 from django.shortcuts import render
+from django.db.models import Count
+from django.db.models.functions import TruncDate
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
@@ -9,6 +12,7 @@ from rest_framework.filters import OrderingFilter
 from .models import Calendar, Schedule
 from .serializers import CalendarSerializer, ScheduleNestedSerializer, ScheduleSerializer
 from users.paginations import TablePagination
+from users.services import fillZeroDates
 
 
 # Create your views here.
@@ -100,3 +104,45 @@ class ScheduleDetailView(APIView):
         access = Schedule.objects.get(id=id)
         access.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# ----------------------------------------------------------------------
+# dashboard
+
+class CalendarCountView(APIView):
+    def get(self, request, format=None):
+        count = Calendar.objects\
+            .filter(user__id=self.request.query_params.get('user', None))\
+            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+            .count()            
+        content = {'count': count}
+        return Response(content)
+
+class ScheduleCountView(APIView):
+    def get(self, request, format=None):
+        count = Schedule.objects\
+            .filter(calendar__user__id=self.request.query_params.get('user', None))\
+            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+            .count()            
+        content = {'count': count}
+        return Response(content)
+
+class CalendarAnnotateView(APIView):
+    def get(self, request, format=None):
+        items = Calendar.objects\
+            .filter(user__id=self.request.query_params.get('user', None))\
+            .annotate(date=TruncDate('created_at'))\
+            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+            .values('date').annotate(count=Count('id')).order_by('-date')
+        filled_items = fillZeroDates(items)
+        return Response(filled_items)
+
+class ScheduleAnnotateView(APIView):
+    def get(self, request, format=None):
+        items = Schedule.objects\
+            .filter(calendar__user__id=self.request.query_params.get('user', None))\
+            .annotate(date=TruncDate('created_at'))\
+            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+            .values('date').annotate(count=Count('id')).order_by('-date')
+        filled_items = fillZeroDates(items)
+        return Response(filled_items)
+
