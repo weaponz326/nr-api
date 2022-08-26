@@ -1,4 +1,6 @@
+import datetime
 from django.shortcuts import render
+from django.db.models import Sum
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
@@ -122,3 +124,34 @@ class ExpenditureDetailView(APIView):
         expenditure = Expenditure.objects.get(id=id)
         expenditure.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# --------------------------------------------------------------------------------------
+# dashboard
+
+class BudgetCountView(APIView):
+    def get(self, request, format=None):
+        count = Budget.objects\
+            .filter(user__id=self.request.query_params.get('user', None))\
+            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+            .count()            
+        content = {'count': count}
+        return Response(content)
+
+class IncomeTotalView(APIView):
+    def get(self, request, format=None):
+        total = Income.objects\
+            .filter(budget__user__id=self.request.query_params.get('user', None))\
+            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+            .aggregate(Sum('amount'))            
+        content = {'total': total}
+        return Response(content)
+
+class ExpenditureTotalView(APIView):
+    def get(self, request, format=None):
+        total = Expenditure.objects\
+            .filter(budget__user__id=self.request.query_params.get('user', None))\
+            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+            .aggregate(Sum('amount'))            
+        content = {'total': total}
+        return Response(content)

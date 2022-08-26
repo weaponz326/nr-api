@@ -1,4 +1,7 @@
+import datetime
 from django.shortcuts import render
+from django.db.models import Count
+from django.db.models.functions import TruncDate
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
@@ -9,6 +12,7 @@ from rest_framework.filters import OrderingFilter
 from .models import Note
 from .serializers import NoteSerializer
 from users.paginations import TablePagination
+from users.services import fillZeroDates
 
 
 # Create your views here.
@@ -56,3 +60,26 @@ class NoteSearchView(generics.ListAPIView):
     serializer_class = NoteSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'body']
+
+# --------------------------------------------------------------------------------------
+# dashboard
+
+class NoteCountView(APIView):
+    def get(self, request, format=None):
+        count = Note.objects\
+            .filter(user__id=self.request.query_params.get('user', None))\
+            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+            .count()           
+        content = {'count': count}
+        return Response(content)
+
+class NoteAnnotateView(APIView):
+    def get(self, request, format=None):
+        items = Note.objects\
+            .filter(user__id=self.request.query_params.get('user', None))\
+            .annotate(date=TruncDate('created_at'))\
+            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+            .values('date').annotate(count=Count('id')).order_by('-date')
+        filled_items = fillZeroDates(items)
+        return Response(filled_items)
+

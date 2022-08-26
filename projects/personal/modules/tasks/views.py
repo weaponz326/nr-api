@@ -1,3 +1,6 @@
+import datetime
+from django.db.models.functions import TruncDate
+from django.db.models import Count
 from django.db.models.functions import TruncDate
 
 from django_filters.rest_framework import DjangoFilterBackend
@@ -9,6 +12,7 @@ from rest_framework.filters import OrderingFilter
 from .models import TaskGroup, TaskItem
 from .serializers import TaskGroupSerializer, TaskItemNestedSerializer, TaskItemSerializer
 from users.paginations import TablePagination
+from users.services import fillZeroDates
 
 
 # Create your views here.
@@ -98,3 +102,52 @@ class TaskItemDetailView(APIView):
         task_item = TaskItem.objects.get(id=id)
         task_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# --------------------------------------------------------------------------------------
+# dashboard
+
+class TaskGroupCountView(APIView):
+    def get(self, request, format=None):
+        count = TaskGroup.objects\
+            .filter(user__id=self.request.query_params.get('user', None))\
+            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+            .count()           
+        content = {'count': count}
+        return Response(content)
+
+class TaskItemCountView(APIView):
+    def get(self, request, format=None):
+        count = TaskItem.objects\
+            .filter(task_group__user__id=self.request.query_params.get('user', None))\
+            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+            .count()           
+        content = {'count': count}
+        return Response(content)
+
+class AllToDoCountView(APIView):
+    def get(self, request, format=None):
+        count = TaskItem.objects\
+            .filter(task_group__user__id=self.request.query_params.get('user', None), status="To Do")\
+            .count()           
+        content = {'count': count}
+        return Response(content)
+
+class TaskGroupAnnotateView(APIView):
+    def get(self, request, format=None):
+        items = TaskGroup.objects\
+            .filter(user__id=self.request.query_params.get('user', None))\
+            .annotate(date=TruncDate('created_at'))\
+            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+            .values('date').annotate(count=Count('id')).order_by('-date')
+        filled_items = fillZeroDates(items)
+        return Response(filled_items)
+
+class TaskItemAnnotateView(APIView):
+    def get(self, request, format=None):
+        items = TaskItem.objects\
+            .filter(task_group__user__id=self.request.query_params.get('user', None))\
+            .annotate(date=TruncDate('created_at'))\
+            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+            .values('date').annotate(count=Count('id')).order_by('-date')
+        filled_items = fillZeroDates(items)
+        return Response(filled_items)
