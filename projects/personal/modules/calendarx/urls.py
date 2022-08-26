@@ -10,8 +10,8 @@ urlpatterns = [
     path('schedule/<id>', views.ScheduleDetailView.as_view()),
     path('all-schedule/', views.AllScheduleView.as_view()),
 
-    path('calendar-count/', views.calendar_count),
-    path('schedule-count/', views.schedule_count),
-    path('calendar-annotate/', views.calendar_annotate),
-    path('schedule-annotate/', views.schedule_annotate),
+    path('dashboard/calendar-count/', views.calendar_count),
+    path('dashboard/schedule-count/', views.schedule_count),
+    path('dashboard/calendar-annotate/', views.calendar_annotate),
+    path('dashboard/schedule-annotate/', views.schedule_annotate),
 ]

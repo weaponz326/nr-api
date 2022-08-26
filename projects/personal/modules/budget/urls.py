@@ -11,7 +11,7 @@ urlpatterns = [
     path('expenditure/', views.ExpenditureView.as_view()),
     path('expenditure/<id>', views.ExpenditureDetailView.as_view()),
     
-    path('budget-count', views.budget_count),
-    path('income-total', views.income_total),
-    path('expenditure-total', views.expenditure_total),
+    path('dashboard/budget-count', views.budget_count),
+    path('dashboard/income-total', views.income_total),
+    path('dashboard/expenditure-total', views.expenditure_total),
 ]
