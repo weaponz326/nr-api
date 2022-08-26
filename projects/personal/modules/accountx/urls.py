@@ -10,7 +10,7 @@ urlpatterns = [
     path('transaction/<id>', views.TransactionDetailView.as_view()),
     path('all-transaction/', views.AllTransactionsView.as_view()),
 
-    path('all-account-count/', views.AllAccountCountView.as_view()),
-    path('transaction-share/', views.TransactionShareView.as_view()),
-    path('transaction-annotate/', views.TransactionAnnotateView.as_view()),
+    path('all-account-count/', views.all_account_count),
+    path('transaction-share/', views.transaction_share),
+    path('transaction-annotate/', views.transaction_annotate),
 ]

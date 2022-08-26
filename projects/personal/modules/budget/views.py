@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.filters import OrderingFilter
+from rest_framework.decorators import api_view
 
 from .models import Budget, Income, Expenditure
 from .serializers import BudgetSerializer, IncomeSerializer, ExpenditureSerializer
@@ -129,29 +130,29 @@ class ExpenditureDetailView(APIView):
 # --------------------------------------------------------------------------------------
 # dashboard
 
-class BudgetCountView(APIView):
-    def get(self, request, format=None):
-        count = Budget.objects\
-            .filter(user__id=self.request.query_params.get('user', None))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .count()            
-        content = {'count': count}
-        return Response(content)
+@api_view()
+def budget_count(request):
+    count = Budget.objects\
+        .filter(user__id=request.query_params.get('user', None))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .count()            
+    content = {'count': count}
+    return Response(content)
 
-class IncomeTotalView(APIView):
-    def get(self, request, format=None):
-        total = Income.objects\
-            .filter(budget__user__id=self.request.query_params.get('user', None))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .aggregate(Sum('amount'))            
-        content = {'total': total}
-        return Response(content)
+@api_view()
+def income_total(request):
+    total = Income.objects\
+        .filter(budget__user__id=request.query_params.get('user', None))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .aggregate(Sum('amount'))            
+    content = {'total': total}
+    return Response(content)
 
-class ExpenditureTotalView(APIView):
-    def get(self, request, format=None):
-        total = Expenditure.objects\
-            .filter(budget__user__id=self.request.query_params.get('user', None))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .aggregate(Sum('amount'))            
-        content = {'total': total}
-        return Response(content)
+@api_view()
+def expenditure_total(request):
+    total = Expenditure.objects\
+        .filter(budget__user__id=request.query_params.get('user', None))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .aggregate(Sum('amount'))            
+    content = {'total': total}
+    return Response(content)

@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, mixins, status, filters
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
 
 from .models import Rink
 from .serializers import RinkNestedSerializer, RinkSerializer
@@ -70,36 +71,36 @@ class AllRinkView(generics.ListAPIView):
 # --------------------------------------------------------------------------------------
 # dashboard
 
-class RinkShareCountView(APIView):
-    def get(self, request, format=None):
-        rink_in = Rink.objects\
-            .filter(recipient__id=self.request.query_params.get('user', None))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .count()
-        
-        rink_out = Rink.objects\
-            .filter(sender__id=self.request.query_params.get('user', None))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .count()
-                       
-        content = {'rink_in': rink_in, 'rink_out': rink_out}
-        return Response(content)
+@api_view()
+def rink_share_count(request):
+    rink_in = Rink.objects\
+        .filter(recipient__id=request.query_params.get('user', None))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .count()
+    
+    rink_out = Rink.objects\
+        .filter(sender__id=request.query_params.get('user', None))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .count()
+                    
+    content = {'rink_in': rink_in, 'rink_out': rink_out}
+    return Response(content)
 
-class RinkShareAnnotateView(APIView):
-    def get(self, request, format=None):
-        rink_in_items = Rink.objects\
-            .filter(recipient__id=self.request.query_params.get('user', None))\
-            .annotate(date=TruncDate('created_at'))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .values('date').annotate(count=Count('id')).order_by('-date')
-        filled_rink_in_items = fillZeroDates(rink_in_items)
+@api_view()
+def rink_share_annotate(request):
+    rink_in_items = Rink.objects\
+        .filter(recipient__id=request.query_params.get('user', None))\
+        .annotate(date=TruncDate('created_at'))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .values('date').annotate(count=Count('id')).order_by('-date')
+    filled_rink_in_items = fillZeroDates(rink_in_items)
 
-        rink_out_items = Rink.objects\
-            .filter(sender__id=self.request.query_params.get('user', None))\
-            .annotate(date=TruncDate('created_at'))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .values('date').annotate(count=Count('id')).order_by('-date')
-        filled_rink_out_items = fillZeroDates(rink_out_items)
+    rink_out_items = Rink.objects\
+        .filter(sender__id=request.query_params.get('user', None))\
+        .annotate(date=TruncDate('created_at'))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .values('date').annotate(count=Count('id')).order_by('-date')
+    filled_rink_out_items = fillZeroDates(rink_out_items)
 
-        content = {'rink_in': filled_rink_in_items, 'rink_out': filled_rink_out_items}
-        return Response(content)
+    content = {'rink_in': filled_rink_in_items, 'rink_out': filled_rink_out_items}
+    return Response(content)

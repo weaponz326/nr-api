@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.filters import OrderingFilter
+from rest_framework.decorators import api_view
 
 from .models import Account, Transaction
 from .serializers import AccountSerializer, TransactionNestedSerializer, TransactionSerializer
@@ -107,44 +108,44 @@ class AllTransactionsView(APIView, TablePagination):
 # --------------------------------------------------------------------------------------
 # dashboard
 
-class AllAccountCountView(APIView):
-    def get(self, request, format=None):
-        count = Account.objects\
-            .filter(user__id=self.request.query_params.get('user', None))\
-            .count()            
-        content = {'count': count}
-        return Response(content)
+@api_view()
+def all_account_count(request):
+    count = Account.objects\
+        .filter(user__id=request.query_params.get('user', None))\
+        .count()            
+    content = {'count': count}
+    return Response(content)
 
-class TransactionShareView(APIView):
-    def get(self, request, format=None):
-        credit = Transaction.objects\
-            .filter(account__user__id=self.request.query_params.get('user', None), transaction_type = "Credit")\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .aggregate(Sum('amount'))
-        
-        debit = Transaction.objects\
-            .filter(account__user__id=self.request.query_params.get('user', None), transaction_type = "Debit")\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .aggregate(Sum('amount'))
-                       
-        content = {'credit': credit['amount__sum'], 'debit': debit['amount__sum']}
-        return Response(content)
+@api_view()
+def transaction_share(request):
+    credit = Transaction.objects\
+        .filter(account__user__id=request.query_params.get('user', None), transaction_type = "Credit")\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .aggregate(Sum('amount'))
+    
+    debit = Transaction.objects\
+        .filter(account__user__id=request.query_params.get('user', None), transaction_type = "Debit")\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .aggregate(Sum('amount'))
+                    
+    content = {'credit': credit['amount__sum'], 'debit': debit['amount__sum']}
+    return Response(content)
 
-class TransactionAnnotateView(APIView):
-    def get(self, request, format=None):
-        credit_items = Transaction.objects\
-            .filter(account__user__id=self.request.query_params.get('user', None), transaction_type = "Credit")\
-            .annotate(date=TruncDate('created_at'))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .values('date').annotate(count=Sum('amount')).order_by('-date')
-        filled_credit_items = fillZeroDates(credit_items)
+@api_view()
+def transaction_annotate(request):
+    credit_items = Transaction.objects\
+        .filter(account__user__id=request.query_params.get('user', None), transaction_type = "Credit")\
+        .annotate(date=TruncDate('created_at'))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .values('date').annotate(count=Sum('amount')).order_by('-date')
+    filled_credit_items = fillZeroDates(credit_items)
 
-        debit_items = Transaction.objects\
-            .filter(account__user__id=self.request.query_params.get('user', None), transaction_type = "Debit")\
-            .annotate(date=TruncDate('created_at'))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .values('date').annotate(count=Sum('amount')).order_by('-date')
-        filled_debit_items = fillZeroDates(debit_items)
+    debit_items = Transaction.objects\
+        .filter(account__user__id=request.query_params.get('user', None), transaction_type = "Debit")\
+        .annotate(date=TruncDate('created_at'))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .values('date').annotate(count=Sum('amount')).order_by('-date')
+    filled_debit_items = fillZeroDates(debit_items)
 
-        content = {'credit': filled_credit_items, 'debit': filled_debit_items}
-        return Response(content)
+    content = {'credit': filled_credit_items, 'debit': filled_debit_items}
+    return Response(content)

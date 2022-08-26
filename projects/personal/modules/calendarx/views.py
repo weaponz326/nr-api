@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, status
 from rest_framework.filters import OrderingFilter
+from rest_framework.decorators import api_view
 
 from .models import Calendar, Schedule
 from .serializers import CalendarSerializer, ScheduleNestedSerializer, ScheduleSerializer
@@ -108,41 +109,41 @@ class ScheduleDetailView(APIView):
 # --------------------------------------------------------------------------------------
 # dashboard
 
-class CalendarCountView(APIView):
-    def get(self, request, format=None):
-        count = Calendar.objects\
-            .filter(user__id=self.request.query_params.get('user', None))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .count()            
-        content = {'count': count}
-        return Response(content)
+@api_view()
+def calendar_count(request):
+    count = Calendar.objects\
+        .filter(user__id=request.query_params.get('user', None))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .count()            
+    content = {'count': count}
+    return Response(content)
 
-class ScheduleCountView(APIView):
-    def get(self, request, format=None):
-        count = Schedule.objects\
-            .filter(calendar__user__id=self.request.query_params.get('user', None))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .count()            
-        content = {'count': count}
-        return Response(content)
+@api_view()
+def schedule_count(request):
+    count = Schedule.objects\
+        .filter(calendar__user__id=request.query_params.get('user', None))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .count()            
+    content = {'count': count}
+    return Response(content)
 
-class CalendarAnnotateView(APIView):
-    def get(self, request, format=None):
-        items = Calendar.objects\
-            .filter(user__id=self.request.query_params.get('user', None))\
-            .annotate(date=TruncDate('created_at'))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .values('date').annotate(count=Count('id')).order_by('-date')
-        filled_items = fillZeroDates(items)
-        return Response(filled_items)
+@api_view()
+def calendar_annotate(request):
+    items = Calendar.objects\
+        .filter(user__id=request.query_params.get('user', None))\
+        .annotate(date=TruncDate('created_at'))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .values('date').annotate(count=Count('id')).order_by('-date')
+    filled_items = fillZeroDates(items)
+    return Response(filled_items)
 
-class ScheduleAnnotateView(APIView):
-    def get(self, request, format=None):
-        items = Schedule.objects\
-            .filter(calendar__user__id=self.request.query_params.get('user', None))\
-            .annotate(date=TruncDate('created_at'))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .values('date').annotate(count=Count('id')).order_by('-date')
-        filled_items = fillZeroDates(items)
-        return Response(filled_items)
+@api_view()
+def schedule_annotate(request):
+    items = Schedule.objects\
+        .filter(calendar__user__id=request.query_params.get('user', None))\
+        .annotate(date=TruncDate('created_at'))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .values('date').annotate(count=Count('id')).order_by('-date')
+    filled_items = fillZeroDates(items)
+    return Response(filled_items)
 

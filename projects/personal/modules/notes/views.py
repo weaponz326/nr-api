@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status, generics, filters
 from rest_framework.filters import OrderingFilter
+from rest_framework.decorators import api_view
 
 from .models import Note
 from .serializers import NoteSerializer
@@ -64,22 +65,22 @@ class NoteSearchView(generics.ListAPIView):
 # --------------------------------------------------------------------------------------
 # dashboard
 
-class NoteCountView(APIView):
-    def get(self, request, format=None):
-        count = Note.objects\
-            .filter(user__id=self.request.query_params.get('user', None))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .count()           
-        content = {'count': count}
-        return Response(content)
+@api_view()
+def note_count(request):
+    count = Note.objects\
+        .filter(user__id=request.query_params.get('user', None))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .count()           
+    content = {'count': count}
+    return Response(content)
 
-class NoteAnnotateView(APIView):
-    def get(self, request, format=None):
-        items = Note.objects\
-            .filter(user__id=self.request.query_params.get('user', None))\
-            .annotate(date=TruncDate('created_at'))\
-            .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
-            .values('date').annotate(count=Count('id')).order_by('-date')
-        filled_items = fillZeroDates(items)
-        return Response(filled_items)
+@api_view()
+def note_annotate(request):
+    items = Note.objects\
+        .filter(user__id=request.query_params.get('user', None))\
+        .annotate(date=TruncDate('created_at'))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .values('date').annotate(count=Count('id')).order_by('-date')
+    filled_items = fillZeroDates(items)
+    return Response(filled_items)
 
