@@ -18,8 +18,8 @@ from users.paginations import TablePagination
 
 class BudgetView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['budget_name', 'budget_type']
-    ordering = ['-pkid']
+    ordering_fields = ['created_at', 'budget_name', 'budget_type']
+    ordering = ['-created_at']
 
     def get(self, request, format=None):
         user = self.request.query_params.get('user', None)

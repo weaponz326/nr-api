@@ -21,7 +21,7 @@ from users.services import fillZeroDates
 class TaskGroupView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['task_group', 'created_at']
-    ordering = ['-pkid']
+    ordering = ['-created_at']
 
     def get(self, request, format=None):
         user = self.request.query_params.get('user', None)
@@ -61,8 +61,8 @@ class TaskGroupDetailView(APIView):
 
 class AllTaskItemView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['task_group', 'task_item', 'priority', 'start_date', 'end_date', 'status']
-    ordering = ['-pkid']
+    ordering_fields = ['created_at', 'task_group', 'task_item', 'priority', 'start_date', 'end_date', 'status']
+    ordering = ['-created_at']
 
     def get(self, request, format=None):
         user = self.request.query_params.get('user', None)

@@ -20,8 +20,8 @@ from users.services import fillZeroDates
 
 class AccountView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['account_name', 'account_number', 'bank_name']
-    ordering = ['-pkid']
+    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
+    ordering = ['-created_at']
 
     def get(self, request, format=None):
         user = self.request.query_params.get('user', None)
@@ -95,8 +95,8 @@ class TransactionDetailView(APIView):
 # all transactions
 class AllTransactionsView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['transaction_date', 'account__account_name', 'account__bank_name', 'description', 'transaction_type', 'amount']
-    ordering = ['-pkid']
+    ordering_fields = ['created_at', 'transaction_date', 'account__account_name', 'account__bank_name', 'description', 'transaction_type', 'amount']
+    ordering = ['-created_at']
 
     def get(self, request, format=None):
         user = self.request.query_params.get('user', None)

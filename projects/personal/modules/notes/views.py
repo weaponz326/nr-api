@@ -21,7 +21,7 @@ from users.services import fillZeroDates
 class NoteView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['title', 'created_at', 'updated_at']
-    ordering = ['-pkid']
+    ordering = ['-created_at']
 
     def get(self, request, format=None):
         user = self.request.query_params.get('user', None)

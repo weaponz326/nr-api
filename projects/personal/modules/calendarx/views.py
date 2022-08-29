@@ -21,7 +21,7 @@ from users.services import fillZeroDates
 class CalendarView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['calendar_name', 'created_at']
-    ordering = ['-pkid']
+    ordering = ['-created_at']
 
     def get(self, request, format=None):
         user = self.request.query_params.get('user', None)
@@ -62,8 +62,8 @@ class CalendarDetailView(APIView):
 
 class AllScheduleView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['schedule_name', 'calendar', 'start_date', 'end_date', 'status']
-    ordering = ['-pkid']
+    ordering_fields = ['created_at', 'schedule_name', 'calendar', 'start_date', 'end_date', 'status']
+    ordering = ['-created_at']
 
     def get(self, request, format=None):
         user = self.request.query_params.get('user', None)

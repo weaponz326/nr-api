@@ -65,7 +65,7 @@ def save_extended_profile(sender, instance, created, **kwargs):
 class InvitationView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['subject', 'created_at', 'inviter', 'inviter_type', 'invitation_status']
-    ordering = ['-pkid']
+    ordering = ['-created_at']
 
     def get(self, request, format=None):
         user = self.request.query_params.get('user', None)
