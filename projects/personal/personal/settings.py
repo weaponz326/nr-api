@@ -28,15 +28,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ll^)d^w*g(^z+-xivgvm2i$rxl=w*ei9l(xszvgjc7z3287e7('
-# SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
+# SECRET_KEY = 'django-insecure-ll^)d^w*g(^z+-xivgvm2i$rxl=w*ei9l(xszvgjc7z3287e7('
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-# DEBUG = os.getenv("DEBUG", "False") == "True"
-# DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
+# DEBUG = True
+DEBUG = os.getenv("DEBUG", "") != "False"
+DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "") != "False"
 
-ALLOWED_HOSTS = ['netrink-persnal-api-cguu3.ondigitalocean.app']
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 'netrink-persnal-api-cguu3.ondigitalocean.app']
 # ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 # Application definition
@@ -66,6 +67,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
@@ -99,26 +101,26 @@ WSGI_APPLICATION = 'personal.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
-# if DEVELOPMENT_MODE is True:
-#     DATABASES = {
-#         "default": {
-#             "ENGINE": "django.db.backends.sqlite3",
-#             "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-#         }
-#     }
-# elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
-#     if os.getenv("DATABASE_URL", None) is None:
-#         raise Exception("DATABASE_URL environment variable not defined")
-#     DATABASES = {
-#         "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
-#     }
+if DEVELOPMENT_MODE is True:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        }
+    }
+elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
+    if os.getenv("DATABASE_URL", None) is None:
+        raise Exception("DATABASE_URL environment variable not defined")
+    DATABASES = {
+        "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+    }
 
 
 # Password validation
@@ -158,6 +160,9 @@ USE_TZ = True
 # STATIC_URL = 'static/'
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# whitenoise for serving static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Default primary key field type
