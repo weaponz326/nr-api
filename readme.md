@@ -38,3 +38,7 @@ Or create the directory, and navigate to the directory and use the relative path
 py ../../manage.py startapp app_name
 ```
 
+The gunicorn command for runnning a project on the deployment server
+```bash
+gunicorn --worker-tmp-dir /dev/shm --chdir ./projects/proect_name project_name.wsgi
+```

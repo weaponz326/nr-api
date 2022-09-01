@@ -37,8 +37,8 @@ DEBUG = os.getenv("DEBUG", "") != "False"
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "") != "False"
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['localhost', 'netrink-persnal-api-cguu3.ondigitalocean.app']
-# ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+# ALLOWED_HOSTS = ['localhost', 'netrink-persnal-api-cguu3.ondigitalocean.app']
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 # Application definition
 
