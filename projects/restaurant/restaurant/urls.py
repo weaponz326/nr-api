@@ -24,4 +24,6 @@ urlpatterns = [
 
     path('', include(router.urls)),
     path('rest/', include('rest_framework.urls')),
+
+    path('accounts/', include('accounts.urls')),
 ]

@@ -5,9 +5,9 @@ import uuid
 
 from .managers import CustomBaseManager, CustomUserManager
 
+
 def users_upload_path(instance, filename):
     return 'users/' + instance.user.id
-
 
 # Create your models here.
 
