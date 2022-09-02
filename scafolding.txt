@@ -1,7 +1,7 @@
 + projects
 	+ personal (P)
 		+ users (A)
-		+ suite modules
+		+ modules
 			+ portal (A)
 			+ settings (A)
 			+ calendar (A)
@@ -10,6 +10,22 @@
 			+ accounts (A)
 			+ tasks (A)
     + restaurant
+		+ accounts (A)
+		+ modules
+			+ module admin (A)
+			+ module portal (A)
+			+ module settings (A)
+			+ module menu (A)
+			+ module staff (A)
+			+ module tables (A)
+			+ module customers (A)
+			+ module deliveries (A)
+			+ module payments (A)
+			+ module roster (A)
+			+ module reservations (A)
+			+ module orders (A)
+			+ module kitchen stock (A)
+			+ module sittings (A)
     + school
     + association
     + enterprise
