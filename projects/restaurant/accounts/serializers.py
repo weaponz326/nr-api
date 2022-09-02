@@ -29,5 +29,7 @@ class AccountSerializer(serializers.ModelSerializer):
             'name',
             'location',
             'about',
-            'logo'
+            'logo',
+            'creator_id',
+            'creator_name',
         ]
