@@ -46,6 +46,19 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'accounts',
+    'modules.adminx',
+    'modules.portal',
+    'modules.settings',
+    'modules.menu',
+    'modules.staff',
+    'modules.payments',
+    'modules.orders',
+    'modules.kitchen_stock',
+    'modules.roster',
+    'modules.tables',
+    'modules.deliveries',
+    'modules.reservations',
+    'modules.customers',
 ]
 
 MIDDLEWARE = [

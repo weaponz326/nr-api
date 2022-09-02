@@ -35,7 +35,7 @@ py manage.py startapp app_name folder_1/folder_2
 ```
 Or create the directory, and navigate to the directory and use the relative path of `manage.py` from there
 ```bash
-py ../../manage.py startapp app_name
+py ../manage.py startapp app_name
 ```
 
 The gunicorn command for runnning a project on the deployment server

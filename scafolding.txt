@@ -12,20 +12,19 @@
     + restaurant
 		+ accounts (A)
 		+ modules
-			+ module admin (A)
-			+ module portal (A)
-			+ module settings (A)
-			+ module menu (A)
-			+ module staff (A)
-			+ module tables (A)
-			+ module customers (A)
-			+ module deliveries (A)
-			+ module payments (A)
-			+ module roster (A)
-			+ module reservations (A)
-			+ module orders (A)
-			+ module kitchen stock (A)
-			+ module sittings (A)
+			+ admin (A)
+			+ portal (A)
+			+ settings (A)
+			+ menu (A)
+			+ staff (A)
+			+ tables (A)
+			+ customers (A)
+			+ deliveries (A)
+			+ payments (A)
+			+ roster (A)
+			+ reservations (A)
+			+ orders (A)
+			+ kitchen stock (A)
     + school
     + association
     + enterprise

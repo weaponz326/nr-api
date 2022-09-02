@@ -26,4 +26,17 @@ urlpatterns = [
     path('rest/', include('rest_framework.urls')),
 
     path('accounts/', include('accounts.urls')),
+    path('module-admin/', include('modules.adminx.urls')),
+    path('module-portal/', include('modules.portal.urls')),
+    path('module-settings/', include('modules.settings.urls')),
+    path('module-menu/', include('modules.menu.urls')),
+    path('module-staff/', include('modules.staff.urls')),
+    path('module-payments/', include('modules.payments.urls')),
+    path('module-orders/', include('modules.orders.urls')),
+    path('module-kitchen-stock/', include('modules.kitchen_stock.urls')),
+    path('module-roster/', include('modules.roster.urls')),
+    path('module-tables/', include('modules.tables.urls')),
+    path('module-deliveries/', include('modules.deliveries.urls')),
+    path('module-reservations/', include('modules.reservations.urls')),
+    path('module-customers/', include('modules.customers.urls')),
 ]
