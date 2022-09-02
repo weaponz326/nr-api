@@ -7,6 +7,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
 from rest_framework.decorators import api_view
 
@@ -19,6 +20,7 @@ from users.services import fillZeroDates
 # Create your views here.
 
 class TaskGroupView(APIView, TablePagination):
+    permission_classes = (IsAuthenticated,)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['task_group', 'created_at']
     ordering = ['-created_at']
@@ -38,6 +40,8 @@ class TaskGroupView(APIView, TablePagination):
         return Response(serializer.errors)
 
 class TaskGroupDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, id, format=None):
         task_group = TaskGroup.objects.get(id=id)
         serializer = TaskGroupSerializer(task_group)
@@ -60,6 +64,7 @@ class TaskGroupDetailView(APIView):
 # task item
 
 class AllTaskItemView(APIView, TablePagination):
+    permission_classes = (IsAuthenticated,)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['created_at', 'task_group', 'task_item', 'priority', 'start_date', 'end_date', 'status']
     ordering = ['-created_at']
@@ -72,6 +77,8 @@ class AllTaskItemView(APIView, TablePagination):
         return self.get_paginated_response(serializer.data)
 
 class TaskItemView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, format=None):
         task_group = self.request.query_params.get('task_group', None)
         task_item = TaskItem.objects.filter(task_group=task_group)
@@ -86,6 +93,8 @@ class TaskItemView(APIView):
         return Response(serializer.errors)
 
 class TaskItemDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, id, format=None):
         task_item = TaskItem.objects.get(id=id)
         serializer = TaskItemSerializer(task_item)

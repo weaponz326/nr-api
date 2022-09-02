@@ -7,6 +7,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status, generics, filters
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
 from rest_framework.decorators import api_view
 
@@ -19,6 +20,7 @@ from users.services import fillZeroDates
 # Create your views here.
 
 class NoteView(APIView, TablePagination):
+    permission_classes = (IsAuthenticated,)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['title', 'created_at', 'updated_at']
     ordering = ['-created_at']
@@ -38,6 +40,8 @@ class NoteView(APIView, TablePagination):
         return Response(serializer.errors)
 
 class NoteDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, id, format=None):
         note = Note.objects.get(id=id)
         serializer = NoteSerializer(note)
@@ -57,6 +61,8 @@ class NoteDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class NoteSearchView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
     filter_backends = [filters.SearchFilter]

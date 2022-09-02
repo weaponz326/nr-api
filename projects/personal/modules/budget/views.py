@@ -6,6 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
 from rest_framework.decorators import api_view
 
@@ -17,6 +18,7 @@ from users.paginations import TablePagination
 # Create your views here.
 
 class BudgetView(APIView, TablePagination):
+    permission_classes = (IsAuthenticated,)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['created_at', 'budget_name', 'budget_type']
     ordering = ['-created_at']
@@ -36,6 +38,8 @@ class BudgetView(APIView, TablePagination):
         return Response(serializer.errors)
 
 class BudgetDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, id, format=None):
         budget = Budget.objects.get(id=id)
         serializer = BudgetSerializer(budget)
@@ -58,6 +62,8 @@ class BudgetDetailView(APIView):
 # --------------------------------------------------------------------------------------------------
 
 class IncomeView(APIView):
+    permission_classes = (IsAuthenticated,)
+    
     def get(self, request, format=None):
         budget = self.request.query_params.get('budget', None)
         income = Income.objects.filter(budget=budget)
@@ -72,6 +78,8 @@ class IncomeView(APIView):
         return Response(serializer.errors)
 
 class IncomeDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, id, format=None):
         income = Income.objects.get(id=id)
         serializer = IncomeSerializer(income)
@@ -94,6 +102,8 @@ class IncomeDetailView(APIView):
 # --------------------------------------------------------------------------------------------------
 
 class ExpenditureView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, format=None):
         budget = self.request.query_params.get('budget', None)
         expenditure = Expenditure.objects.filter(budget=budget)
@@ -108,6 +118,8 @@ class ExpenditureView(APIView):
         return Response(serializer.errors)
 
 class ExpenditureDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, id, format=None):
         expenditure = Expenditure.objects.get(id=id)
         serializer = ExpenditureSerializer(expenditure)

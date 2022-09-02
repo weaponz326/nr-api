@@ -63,6 +63,7 @@ def save_extended_profile(sender, instance, created, **kwargs):
 # invitations
 
 class InvitationView(APIView, TablePagination):
+    permission_classes = (IsAuthenticated,)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['subject', 'created_at', 'inviter', 'inviter_type', 'invitation_status']
     ordering = ['-created_at']
@@ -82,6 +83,8 @@ class InvitationView(APIView, TablePagination):
         return Response(serializer.errors)
 
 class InvitationDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+    
     def get(self, request, id, format=None):
         Invitation = Invitation.objects.get(id=id)
         serializer = InvitationSerializer(Invitation)

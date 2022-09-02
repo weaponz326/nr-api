@@ -7,6 +7,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
 from rest_framework.decorators import api_view
 
@@ -19,6 +20,7 @@ from users.services import fillZeroDates
 # Create your views here.
 
 class CalendarView(APIView, TablePagination):
+    permission_classes = (IsAuthenticated,)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['calendar_name', 'created_at']
     ordering = ['-created_at']
@@ -39,6 +41,8 @@ class CalendarView(APIView, TablePagination):
         return Response(serializer.errors)
 
 class CalendarDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, id, format=None):
         access = Calendar.objects.get(id=id)
         serializer = CalendarSerializer(access)
@@ -61,6 +65,9 @@ class CalendarDetailView(APIView):
 # schedule
 
 class AllScheduleView(APIView, TablePagination):
+    permission_classes = (IsAuthenticated,)
+
+    permission_classes = (IsAuthenticated,)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['created_at', 'schedule_name', 'calendar', 'start_date', 'end_date', 'status']
     ordering = ['-created_at']
@@ -73,6 +80,8 @@ class AllScheduleView(APIView, TablePagination):
         return self.get_paginated_response(serializer.data)
 
 class ScheduleView(APIView, TablePagination):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, format=None):
         calendar = self.request.query_params.get('calendar', None)
         schedule = Schedule.objects.filter(calendar=calendar)
@@ -88,6 +97,8 @@ class ScheduleView(APIView, TablePagination):
         return Response(serializer.errors)
 
 class ScheduleDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, id, format=None):
         access = Schedule.objects.get(id=id)
         serializer = ScheduleSerializer(access)

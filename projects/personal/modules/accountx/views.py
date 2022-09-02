@@ -7,6 +7,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
 from rest_framework.decorators import api_view
 
@@ -19,6 +20,7 @@ from users.services import fillZeroDates
 # Create your views here.
 
 class AccountView(APIView, TablePagination):
+    permission_classes = (IsAuthenticated,)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
     ordering = ['-created_at']
@@ -38,6 +40,8 @@ class AccountView(APIView, TablePagination):
         return Response(serializer.errors)
 
 class AccountDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, id, format=None):
         account = Account.objects.get(id=id)
         serializer = AccountSerializer(account)
@@ -60,6 +64,8 @@ class AccountDetailView(APIView):
 # transactions
 
 class TransactionView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, format=None):
         account = self.request.query_params.get('account', None)
         transaction = Transaction.objects.filter(account=account)
@@ -74,6 +80,8 @@ class TransactionView(APIView):
         return Response(serializer.errors)
 
 class TransactionDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, id, format=None):
         transaction = Transaction.objects.get(id=id)
         serializer = TransactionSerializer(transaction)
@@ -94,6 +102,7 @@ class TransactionDetailView(APIView):
 
 # all transactions
 class AllTransactionsView(APIView, TablePagination):
+    permission_classes = (IsAuthenticated,)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ['created_at', 'transaction_date', 'account__account_name', 'account__bank_name', 'description', 'transaction_type', 'amount']
     ordering = ['-created_at']
