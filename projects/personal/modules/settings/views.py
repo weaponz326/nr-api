@@ -37,21 +37,21 @@ class ExtendedProfileDetailView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, id, format=None):
-        rink = ExtendedProfile.objects.get(id=id)
-        serializer = ExtendedProfileSerializer(rink)
+        extended_profile = ExtendedProfile.objects.get(id=id)
+        serializer = ExtendedProfileSerializer(extended_profile)
         return Response(serializer.data)
 
     def put(self, request, id, format=None):
-        rink = ExtendedProfile.objects.get(id=id)
-        serializer = ExtendedProfileSerializer(rink, data=request.data)
+        extended_profile = ExtendedProfile.objects.get(id=id)
+        serializer = ExtendedProfileSerializer(extended_profile, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
 
     def delete(self, request, id, format=None):
-        rink = ExtendedProfile.objects.get(id=id)
-        rink.delete()
+        extended_profile = ExtendedProfile.objects.get(id=id)
+        extended_profile.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 @receiver(post_save, sender=User)
