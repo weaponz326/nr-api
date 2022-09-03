@@ -7,7 +7,7 @@ from .managers import CustomBaseManager, CustomUserManager
 
 
 def accounts_upload_path(instance, filename):
-    return 'accounts/' + instance.account.id
+    return instance.account.id + '/account/logo'
 
 # Create your models here.
 

@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from accounts.serializers import AccountSerializer
 from .models import AccountUser, Access, Invitation
 
 
@@ -14,13 +16,19 @@ class AccountUserSerializer(serializers.ModelSerializer):
             'access_level',
         ]
 
-    def __init__(self, *args, **kwargs):
-        super(AccountUserSerializer, self).__init__(*args, **kwargs)
-        request = self.context.get('request')
-        if request and (request.method == 'POST' or request.method == 'PUT'):
-            self.Meta.depth = 0
-        else:
-            self.Meta.depth = 1
+class AccountUserDepthSerializer(serializers.ModelSerializer):
+    account = AccountSerializer()
+    
+    class Meta:
+        model = AccountUser
+        fields = [
+            'id',
+            'created_at',
+            'account',
+            'personal_id',
+            'personal_name',
+            'access_level',
+        ]
 
 class AccessSerializer(serializers.ModelSerializer):
     class Meta:

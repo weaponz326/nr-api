@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework import generics, status
 
 from .models import AccountUser, Access, Invitation
-from .serializers import AccountUserSerializer, AccessSerializer, InvitationSerializer
+from .serializers import AccountUserDepthSerializer, AccountUserSerializer, AccessSerializer, InvitationSerializer
 from accounts.models import Account
 
 
@@ -57,7 +57,7 @@ class AccountUserAccountView(APIView):
     def get(self, request, format=None):
         personal_id = self.request.query_params.get('personal_id', None)
         user = AccountUser.objects.filter(personal_id=personal_id)
-        serializer = AccountUserSerializer(user, many=True)
+        serializer = AccountUserDepthSerializer(user, many=True)
         return Response(serializer.data)
 
 
