@@ -1,3 +1,5 @@
+import uuid
+
 from django.shortcuts import render
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -17,7 +19,7 @@ from accounts.models import Account
 
 # users
 
-class UserView(APIView):
+class AccountUserView(APIView):
     def get(self, request, format=None):
         account = self.request.query_params.get('account', None)
         user = AccountUser.objects.filter(account=account)
@@ -31,7 +33,7 @@ class UserView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors)
 
-class UserDetailView(APIView):
+class AccountUserDetailView(APIView):
     def get(self, request, id, format=None):
         user = AccountUser.objects.get(id=id)
         serializer = AccountUserSerializer(user)
@@ -49,6 +51,15 @@ class UserDetailView(APIView):
         user = AccountUser.objects.get(id=id)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# all accounts of an account belonging to a user
+class AccountUserAccountView(APIView):
+    def get(self, request, format=None):
+        personal_id = self.request.query_params.get('personal_id', None)
+        user = AccountUser.objects.filter(personal_id=personal_id)
+        serializer = AccountUserSerializer(user, many=True)
+        return Response(serializer.data)
+
 
 # access
 # ---------------------------------------------------------------------------
@@ -129,23 +140,21 @@ class InvitationDetailView(APIView):
 @receiver(post_save, sender=Account)
 def save_account_user(sender, instance, created, **kwargs):
     if created:
-        s = SessionStore()
-
         AccountUser.objects.create(
             account=Account.objects.get(id=instance.id),
             is_creator=True,
             personal_id=instance.creator_id,
             personal_name=instance.creator_name,
-            user_level="Admin",
+            access_level="Admin",
         )
 
 @receiver(post_save, sender=AccountUser)
 def save_access(sender, instance, created, **kwargs):
     if created:
-        if instance.user_level == "Admin":
+        if instance.access_level == "Admin":
             Access.objects.create(
                 id=instance.id,
-                account=Account.objects.get(account=instance.account),
+                account=Account.objects.get(id=uuid.UUID(str(instance.account))),
                 admin_access=True,
                 portal_access=True,
                 settings_access=True,
@@ -159,8 +168,22 @@ def save_access(sender, instance, created, **kwargs):
                 reservations_access=True,
                 orders_access=True,
                 kitchen_stock_access=True,
-                sittings_access=True,
             )
         else:
-            Access.objects.create(id=AccountUser.objects.get(id=instance.id))
-
+            Access.objects.create(
+                id=instance.id,
+                account=Account.objects.get(id=uuid.UUID(str(id=instance.account))),
+                admin_access=False,
+                portal_access=False,
+                settings_access=False,
+                menu_access=False,
+                staff_access=False,
+                tables_access=False,
+                customers_access=False,
+                deliveries_access=False,
+                payments_access=False,
+                roster_access=False,
+                reservations_access=False,
+                orders_access=False,
+                kitchen_stock_access=False,
+            )

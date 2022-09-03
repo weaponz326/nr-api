@@ -6,17 +6,17 @@ from accounts.models import CustomBaseModel, Account
 # Create your models here.
 
 class AccountUser(CustomBaseModel):
-    account = models.ForeignKey(Account, to_field='id', on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, to_field='id', on_delete=models.DO_NOTHING)
     is_creator = models.BooleanField(default=False)
-    personal_id = models.CharField(null=True, max_length=200)
-    personal_name = models.CharField(null=True, max_length=100)
-    access_level = models.CharField(null=True, max_length=20)
+    personal_id = models.CharField(null=True, max_length=256)
+    personal_name = models.CharField(null=True, max_length=256)
+    access_level = models.CharField(null=True, max_length=32)
 
     def __str__(self):
         return str(self.id)
 
 class Access(CustomBaseModel):
-    account = models.ForeignKey(Account, to_field='id', on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, to_field='id', on_delete=models.DO_NOTHING)
     admin_access = models.BooleanField(default=False)
     portal_access = models.BooleanField(default=False)
     settings_access = models.BooleanField(default=False)
@@ -35,10 +35,10 @@ class Access(CustomBaseModel):
         return str(self.id)
 
 class Invitation(CustomBaseModel):
-    account = models.ForeignKey(Account, to_field='id', on_delete=models.CASCADE)
-    invitee_id = models.CharField(null=True, max_length=200)
-    invitee_name = models.CharField(null=True, max_length=200)
-    invitation_status = models.CharField(null=True, max_length=30)
+    account = models.ForeignKey(Account, to_field='id', on_delete=models.DO_NOTHING)
+    invitee_id = models.CharField(null=True, max_length=256)
+    invitee_name = models.CharField(null=True, max_length=256)
+    invitation_status = models.CharField(null=True, max_length=64)
     date_sent = models.DateTimeField(null=True, auto_now=True)
     date_confirmed = models.DateTimeField(null=True)
 

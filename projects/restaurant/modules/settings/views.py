@@ -89,14 +89,14 @@ class SubscriptionDetailView(APIView):
 def save_extended_profile(sender, instance, created, **kwargs):
     if created:
         ExtendedProfile.objects.create(
-            id=Account.objects.get(id=instance.id)
+            id=instance.id
         )
 
 @receiver(post_save, sender=Account)
 def save_subscription(sender, instance, created, **kwargs):
     if created:
         Subscription.objects.create(
-            id=Account.objects.get(id=instance.id),
+            id=instance.id,
             subscription_type="Individual",
             number_users=1,
             status="Active"
