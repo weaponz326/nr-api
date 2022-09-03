@@ -127,7 +127,7 @@ class InvitationDetailView(APIView):
 # signals
 
 @receiver(post_save, sender=Account)
-def save_user(sender, instance, created, **kwargs):
+def save_account_user(sender, instance, created, **kwargs):
     if created:
         s = SessionStore()
 
@@ -144,8 +144,8 @@ def save_access(sender, instance, created, **kwargs):
     if created:
         if instance.user_level == "Admin":
             Access.objects.create(
-                id=AccountUser.objects.get(id=instance.id),
-                account=Account.objects.get(id=instance.account),
+                id=instance.id,
+                account=Account.objects.get(account=instance.account),
                 admin_access=True,
                 portal_access=True,
                 settings_access=True,
