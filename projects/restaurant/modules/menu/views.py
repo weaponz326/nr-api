@@ -1,22 +1,33 @@
 from django.shortcuts import render
 from django.db.models import Count
 
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import OrderingFilter
+from rest_framework.parsers import MultiPartParser, FileUploadParser
 
 from .models import MenuGroup, MenuItem
-from .serializers import  MenuGroupSerializer, MenuItemSerializer
+from .serializers import  MenuGroupSerializer, MenuItemDepthSerializer, MenuItemSerializer
+from accounts.paginations import TablePagination
 
 
 # Create your views here.
 
-class MenuGroupView(APIView):
+class MenuGroupView(APIView, TablePagination):
+    parser_class = (FileUploadParser,)
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
+    ordering = ['-created_at']
+
     def get(self, request, format=None):
         account = self.request.query_params.get('account', None)
         menu_group = MenuGroup.objects.filter(account=account)
-        serializer = MenuGroupSerializer(menu_group, many=True)
-        return Response(serializer.data)
+        results = self.paginate_queryset(menu_group, request, view=self)
+        serializer = MenuGroupSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def post(self, request, format=None):
         serializer = MenuGroupSerializer(data=request.data)
@@ -26,6 +37,8 @@ class MenuGroupView(APIView):
         return Response(serializer.errors)
 
 class MenuGroupDetailView(APIView):
+    parser_class = (FileUploadParser,)
+
     def get(self, request, id, format=None):
         menu_group = MenuGroup.objects.get(id=id)
         serializer = MenuGroupSerializer(menu_group)
@@ -33,7 +46,7 @@ class MenuGroupDetailView(APIView):
 
     def put(self, request, id, format=None):
         menu_group = MenuGroup.objects.get(id=id)
-        serializer = MenuGroupSerializer(menu_group, data=request.data)
+        serializer = MenuGroupSerializer(menu_group, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -46,6 +59,19 @@ class MenuGroupDetailView(APIView):
 
 # ------------------------------------------------------------------------------------
 # menu items
+
+class AllMenuItemView(APIView, TablePagination):
+    parser_classes = (MultiPartParser,)
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
+    ordering = ['-created_at']
+
+    def get(self, request, format=None):
+        account = self.request.query_params.get('account', None)
+        menu_item = MenuItem.objects.filter(menu_group__account=account)
+        results = self.paginate_queryset(menu_item, request, view=self)
+        serializer = MenuItemDepthSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
 
 class MenuItemView(APIView):
     def get(self, request, format=None):

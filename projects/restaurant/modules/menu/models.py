@@ -3,6 +3,9 @@ from django.db import models
 from accounts.models import CustomBaseModel, Account
 
 
+def item_iamge_upload_path(instance, filename):
+    return instance.account.id + '/menu/'
+
 # Create your models here.
 
 class MenuGroup(CustomBaseModel):
@@ -18,6 +21,7 @@ class MenuItem(CustomBaseModel):
     item_code = models.CharField(max_length=32, blank=True)
     item_name = models.CharField(max_length=256, blank=True)
     price = models.DecimalField(max_digits=11, decimal_places=2, null=True)
+    image = models.FileField(null=True, blank=True, upload_to=item_iamge_upload_path)
     description = models.TextField(blank=True)
 
     def __str__(self):
