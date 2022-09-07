@@ -12,7 +12,7 @@ class Delivery(CustomBaseModel):
     order = models.ForeignKey(Order, to_field='id', on_delete=models.DO_NOTHING, null=True, blank=True)
     delivery_code = models.CharField(max_length=64, null=True, blank=True)
     delivery_date = models.DateTimeField(null=True, blank=True)
-    customer_location = models.CharField(max_length=256, null=True, blank=True)
+    delivery_location = models.CharField(max_length=256, null=True, blank=True)
     delivery_status = models.CharField(max_length=64, null=True, blank=True)
 
     def __str__(self):

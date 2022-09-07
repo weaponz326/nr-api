@@ -19,6 +19,10 @@ from accounts.paginations import TablePagination
 # Create your views here.
 
 class DeliveryView(APIView, TablePagination):
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
+    ordering = ['-created_at']
+    
     def get(self, request, format=None):
         account = self.request.query_params.get('account', None)
         delivery = Delivery.objects.filter(account=account)
@@ -27,17 +31,23 @@ class DeliveryView(APIView, TablePagination):
         return self.get_paginated_response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = DeliverySerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors)
+        if Delivery.objects.filter(id=request.data.get('id')).exists():
+            return Response("exists")
+        else:
+            serializer = DeliverySerializer(data=request.data, context={'request': request})
+            if serializer.is_valid():
+                serializer.save(id=request.data.get('id'))
+                return Response(serializer.data)
+            return Response(serializer.errors)
 
 class DeliveryDetailView(APIView):
     def get(self, request, id, format=None):
-        delivery = Delivery.objects.get(id=id)
-        serializer = DeliveryDepthSerializer(delivery)
-        return Response(serializer.data)
+        if Delivery.objects.filter(id=id).exists():
+            delivery = Delivery.objects.get(id=id)
+            serializer = DeliveryDepthSerializer(delivery)
+            return Response(serializer.data)
+        else:
+            return Response('not exist')
 
     def put(self, request, id, format=None):
         delivery = Delivery.objects.get(id=id)
@@ -51,9 +61,3 @@ class DeliveryDetailView(APIView):
         delivery = Delivery.objects.get(id=id)
         delivery.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-@receiver(post_save, sender=Order)
-def save_extended_profile(sender, instance, created, **kwargs):
-    if created or update:
-        if instance.order_type == 'Delivery':
-            pass

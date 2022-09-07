@@ -9,12 +9,12 @@ class DeliverySerializer(serializers.ModelSerializer):
         model = Delivery
         fields = [
             'id',
-            'created',
+            'created_at',
             'account',
             'order',
             'delivery_code',
             'delivery_date',
-            'customer_location',
+            'delivery_location',
             'delivery_status',
         ]
 
@@ -25,11 +25,11 @@ class DeliveryDepthSerializer(serializers.ModelSerializer):
         model = Delivery
         fields = [
             'id',
-            'created',
+            'created_at',
             'account',
             'order',
             'delivery_code',
             'delivery_date',
-            'customer_location',
+            'delivery_location',
             'delivery_status',
         ]
