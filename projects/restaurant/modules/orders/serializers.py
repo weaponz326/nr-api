@@ -1,9 +1,30 @@
 from rest_framework import serializers
 
 from .models import Order, OrderItem
+from modules.customers.serializers import CustomerSerializer
+from modules.tables.serializers import TableSerializer
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = [
+            'id',
+            'created_at',
+            'account',
+            'table',
+            'customer',
+            'customer_name',
+            'order_code',
+            'order_date',
+            'order_type',
+            'order_status',
+            'order_total',
+        ]
+
+class OrderDepthSerializer(serializers.ModelSerializer):
+    table = TableSerializer()
+    customer = CustomerSerializer()
 
     class Meta:
         model = Order
@@ -11,10 +32,11 @@ class OrderSerializer(serializers.ModelSerializer):
             'id',
             'created_at',
             'account',
+            'table',
             'customer',
+            'customer_name',
             'order_code',
             'order_date',
-            'customer_name',
             'order_type',
             'order_status',
             'order_total',
