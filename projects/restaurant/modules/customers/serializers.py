@@ -13,6 +13,7 @@ class CustomerSerializer(serializers.ModelSerializer):
             'account',
             'customer_code',
             'customer_name',
+            'customer_type',
             'phone',
             'email',
             'address',

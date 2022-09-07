@@ -3,7 +3,8 @@ from accounts.models import CustomBaseModel, Account
 
 
 def staff_upload_path(instance, filename):
-    return 'staff/' + instance.account.id + '/' + "TODO: timestamp"
+    return instance.account.id + '/staff/'
+    # return 'staff/' + instance.account.id + '/' + "TODO: timestamp"
 
 # Create your models here.
 

@@ -1,21 +1,30 @@
 from django.shortcuts import render
 
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import OrderingFilter
 
 from .models import Customer
 from .serializers import CustomerSerializer
+from accounts.paginations import TablePagination
 
 
 # Create your views here.
 
-class CustomerView(APIView):
+class CustomerView(APIView, TablePagination):
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
+    ordering = ['-created_at']
+
     def get(self, request, format=None):
         account = self.request.query_params.get('account', None)
         customer = Customer.objects.filter(account=account)
-        serializer = CustomerSerializer(customer, many=True)        
-        return Response(serializer.data)
+        results = self.paginate_queryset(customer, request, view=self)
+        serializer = CustomerSerializer(results, many=True)        
+        return self.get_paginated_response(serializer.data)
 
     def post(self, request, format=None):
         serializer = CustomerSerializer(data=request.data)

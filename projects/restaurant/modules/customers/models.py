@@ -9,6 +9,7 @@ class Customer(CustomBaseModel):
     account = models.ForeignKey(Account, to_field='id', on_delete=models.DO_NOTHING)
     customer_code = models.CharField(max_length=64, null=True,  blank=True)
     customer_name = models.CharField(max_length=256, null=True,  blank=True)
+    customer_type = models.CharField(max_length=256, null=True,  blank=True)
     phone = models.CharField(max_length=32, null=True, blank=True)
     email = models.EmailField(max_length=128, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
