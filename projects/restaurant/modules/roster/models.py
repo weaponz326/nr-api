@@ -41,6 +41,7 @@ class StaffPersonnel(CustomBaseModel):
     def __str__(self):
         return str(self.id)
 
+# TODO: to be removed
 class RosterDay(CustomBaseModel):
     roster = models.ForeignKey(Roster, to_field='id', on_delete=models.DO_NOTHING)
     day = models.DateField(null=True, blank=True)
@@ -49,3 +50,5 @@ class RosterSheet(CustomBaseModel):
     roster_day = models.ForeignKey(RosterDay, to_field='id', null=True, on_delete=models.DO_NOTHING)
     shift = models.ForeignKey(Shift, null=True, on_delete=models.DO_NOTHING)
     batch = models.ForeignKey(Batch, null=True, on_delete=models.DO_NOTHING)
+    # shift = models.ForeignKey(Shift, null=True, on_delete=models.DO_NOTHING)
+    # sheet_days = models.JSONField(null=True, blank=True)

@@ -1,9 +1,16 @@
+from datetime import date, timedelta, datetime
+import json
+
 from django.shortcuts import render
-from datetime import date, timedelta
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import OrderingFilter
 
 from .models import (
     Roster,
@@ -22,16 +29,22 @@ from .serializers import (
     RosterSheetSerializer
 )
 from modules.staff.models import Staff
+from accounts.paginations import TablePagination
 
 
 # Create your views here.
 
-class RosterView(APIView):
+class RosterView(APIView, TablePagination):
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
+    ordering = ['-created_at']
+
     def get(self, request, format=None):
         account = self.request.query_params.get('account', None)
         roster = Roster.objects.filter(account=account)
-        serializer = RosterSerializer(roster, many=True)
-        return Response(serializer.data)
+        results = self.paginate_queryset(roster, request, view=self)
+        serializer = RosterSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def post(self, request, format=None):
         serializer = RosterSerializer(data=request.data)
@@ -221,3 +234,35 @@ class RosterSheetView(APIView):
 
     def post(self, request, format=None):
         return Response({ 'message' : 'TODO' })
+
+# -----------------------------------------------------------------------------------
+
+@receiver(post_save, sender=Shift)
+def save_sheet(sender, instance, created, **kwargs):
+    shifts = Shift.objects.filter(roster=instance.roster)
+    days = get_roster_days(instance.from_date, instance.to_date)
+
+    if created:
+        for s in shifts:
+            RosterSheet.objects.create(
+                roster=instance.roster,
+                shift=s.shift_name, 
+                days=days
+            )
+
+    if not created:
+        pass
+
+def get_roster_days(from_date, to_date):
+    date_batch_objects = {}
+    delta = date(to_date) - date(from_date)
+
+    for i in range(delta.days + 1):
+        day = from_date + timedelta(days=i)
+        data = {day: ''}
+        data = json.load(data)
+        date_batch_objects.update(data)
+
+    print(date_batch_objects)
+    return date_batch_objects
+    
