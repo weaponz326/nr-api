@@ -1,13 +1,16 @@
+import uuid
+
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-import uuid
 
 from .managers import CustomBaseManager, CustomUserManager
 
 
 def accounts_upload_path(instance, filename):
-    return instance.account.id + '/account/logo'
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    return '{}/account/{}'.format(instance.id, filename)
 
 # Create your models here.
 

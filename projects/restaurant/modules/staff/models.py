@@ -1,10 +1,13 @@
+import uuid
 from django.db import models
+
 from accounts.models import CustomBaseModel, Account
 
 
 def staff_upload_path(instance, filename):
-    return instance.account.id + '/staff/'
-    # return 'staff/' + instance.account.id + '/' + "TODO: timestamp"
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    return '{}/modules/staff/{}'.format(instance.account.id, filename)
 
 # Create your models here.
 

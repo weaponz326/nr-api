@@ -1,10 +1,13 @@
+import uuid
 from django.db import models
 
 from accounts.models import CustomBaseModel, Account
 
 
-def item_iamge_upload_path(instance, filename):
-    return instance.account.id + '/menu/'
+def menu_upload_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    return '{}/modules/menu/{}'.format(instance.menu_group.account.id, filename)
 
 # Create your models here.
 
@@ -21,7 +24,7 @@ class MenuItem(CustomBaseModel):
     item_code = models.CharField(max_length=32, blank=True)
     item_name = models.CharField(max_length=256, blank=True)
     price = models.DecimalField(max_digits=11, decimal_places=2, null=True)
-    image = models.FileField(null=True, blank=True, upload_to=item_iamge_upload_path)
+    image = models.FileField(null=True, blank=True, upload_to=menu_upload_path)
     description = models.TextField(blank=True)
 
     def __str__(self):
