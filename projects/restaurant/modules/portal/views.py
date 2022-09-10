@@ -5,9 +5,10 @@ from django.db.models import Count
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, mixins, status, filters
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Rink
-from .serializers import RinkSerializer
+from .serializers import RinkSerializer, RinkNestedSerializer
 
 
 # Create your views here.
@@ -17,7 +18,7 @@ class RinkView(APIView):
     def get(self, request, format=None):
         account = self.request.query_params.get('account', None)
         rink = Rink.objects.filter(account=account)
-        serializer = RinkSerializer(rink, many=True)
+        serializer = RinkNestedSerializer(rink, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
@@ -30,7 +31,7 @@ class RinkView(APIView):
 class RinkDetailView(APIView):
     def get(self, request, id, format=None):
         rink = Rink.objects.get(id=id)
-        serializer = RinkSerializer(rink)
+        serializer = RinkNestedSerializer(rink)
         return Response(serializer.data)
 
     def put(self, request, id, format=None):
@@ -48,7 +49,7 @@ class RinkDetailView(APIView):
 
 # list all incoming and outgoing rinks of a account
 class AllRinkView(generics.ListAPIView):
-    serializer_class = RinkSerializer
+    serializer_class = RinkNestedSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['created_at']
     ordering = ['-created_at']
