@@ -61,6 +61,5 @@ class InvitationSerializer(serializers.ModelSerializer):
             'invitee_id',
             'invitee_name',
             'invitation_status',
-            'date_sent',
             'date_confirmed',
         ]

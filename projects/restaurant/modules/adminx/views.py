@@ -3,16 +3,18 @@ import uuid
 from django.shortcuts import render
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.contrib.sessions.backends.db import SessionStore
-from django.contrib.sessions.models import Session
 
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import generics, status
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import OrderingFilter
 
 from .models import AccountUser, Access, Invitation
 from .serializers import AccountUserDepthSerializer, AccountUserSerializer, AccessSerializer, InvitationSerializer
 from accounts.models import Account
+from accounts.paginations import TablePagination
 
 
 # Create your views here.
@@ -100,12 +102,17 @@ class AccessDetailView(APIView):
 
 # -------------------------------------------------------------------------------------------------------
 
-class InvitationView(APIView):
+class InvitationView(APIView, TablePagination):
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    ordering_fields = ['created_at', 'invitee_name', 'invitation_status']
+    ordering = ['-created_at']
+
     def get(self, request, format=None):
         account = self.request.query_params.get('account', None)
         invitation = Invitation.objects.filter(account=account)
-        serializer = InvitationSerializer(invitation, many=True)
-        return Response(serializer.data)
+        results = self.paginate_queryset(invitation, request, view=self)
+        serializer = InvitationSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def post(self, request, format=None):
         serializer = InvitationSerializer(data=request.data)

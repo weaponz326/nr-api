@@ -27,6 +27,9 @@ class InvitationSerializer(serializers.ModelSerializer):
             'updated_at',
             'user',
             'invitation_status',
-            'inviter',
             'inviter_type',
+            'inviter_invitation_id',
+            'inviter_id',
+            'inviter_name',
+            'inviter_location',
         ]

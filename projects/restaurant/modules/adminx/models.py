@@ -39,7 +39,6 @@ class Invitation(CustomBaseModel):
     invitee_id = models.CharField(null=True, max_length=256)
     invitee_name = models.CharField(null=True, max_length=256)
     invitation_status = models.CharField(null=True, max_length=64)
-    date_sent = models.DateTimeField(null=True, auto_now=True)
     date_confirmed = models.DateTimeField(null=True)
 
     def __str__(self):
