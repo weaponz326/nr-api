@@ -18,7 +18,7 @@ from accounts.paginations import TablePagination
 class StaffView(APIView, TablePagination):
     parser_class = (FileUploadParser,)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
+    ordering_fields = ['created_at', 'staff_code', 'first_name', 'last_name', 'department', 'job']
     ordering = ['-created_at']
 
     def get(self, request, format=None):

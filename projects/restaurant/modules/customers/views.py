@@ -15,9 +15,9 @@ from accounts.paginations import TablePagination
 # Create your views here.
 
 class CustomerView(APIView, TablePagination):
-    filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
-    ordering = ['-created_at']
+    filter_backends = [DjangoFilterBackend, OrderingFilter,]
+    ordering_fields = ('created_at', 'customer_code', 'customer_name', 'phone')
+    ordering = ('-created_at',)
 
     def get(self, request, format=None):
         account = self.request.query_params.get('account', None)

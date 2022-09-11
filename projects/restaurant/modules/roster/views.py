@@ -36,7 +36,7 @@ from accounts.paginations import TablePagination
 
 class RosterView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
+    ordering_fields = ['created_at', 'roster_code', 'roster_name']
     ordering = ['-created_at']
 
     def get(self, request, format=None):

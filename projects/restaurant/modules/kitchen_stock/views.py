@@ -16,7 +16,7 @@ from accounts.paginations import TablePagination
 
 class StockItemView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
+    ordering_fields = ['created_at', 'item_code', 'item_name', 'quantity', 'category', 'item_type', 'refill_ordered']
     ordering = ['-created_at']
 
     def get(self, request, format=None):

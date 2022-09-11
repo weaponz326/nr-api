@@ -16,7 +16,7 @@ from accounts.paginations import TablePagination
 
 class OrderView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
+    ordering_fields = ['created_at', 'order_code', 'order_date', 'customer_name', 'order_type', 'total_amount']
     ordering = ['-created_at']
 
     def get(self, request, format=None):

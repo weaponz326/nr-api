@@ -20,7 +20,7 @@ from accounts.paginations import TablePagination
 
 class DeliveryView(APIView, TablePagination):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
+    ordering_fields = ['created_at', 'delivery_date', 'delivery_location', 'delivery_status', 'order.order_code', 'order.order_date']
     ordering = ['-created_at']
     
     def get(self, request, format=None):

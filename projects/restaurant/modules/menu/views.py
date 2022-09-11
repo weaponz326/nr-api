@@ -19,7 +19,7 @@ from accounts.paginations import TablePagination
 class MenuGroupView(APIView, TablePagination):
     parser_class = (FileUploadParser,)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
+    ordering_fields = ['created_at', 'menu_group', 'category']
     ordering = ['-created_at']
 
     def get(self, request, format=None):
@@ -63,7 +63,7 @@ class MenuGroupDetailView(APIView):
 class AllMenuItemView(APIView, TablePagination):
     parser_classes = (MultiPartParser,)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['created_at', 'account_name', 'account_number', 'bank_name']
+    ordering_fields = ['created_at', 'item_code', 'item_name', 'price', 'menu_group.menu_group', 'menu_group.category']
     ordering = ['-created_at']
 
     def get(self, request, format=None):

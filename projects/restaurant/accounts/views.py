@@ -1,3 +1,4 @@
+from functools import partial
 from django.shortcuts import render
 from django.contrib.sessions.backends.db import SessionStore
 
@@ -36,7 +37,7 @@ class AccountDetailView(APIView):
 
     def put(self, request, id, format=None):
         account = Account.objects.get(id=id)
-        serializer = AccountSerializer(account, data=request.data)
+        serializer = AccountSerializer(account, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({ 'message': 'OK', 'data': serializer.data })
