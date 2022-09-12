@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
+from rest_framework.decorators import api_view
 
 from .models import Customer
 from .serializers import CustomerSerializer
@@ -51,3 +52,14 @@ class CustomerDetailView(APIView):
         customer = Customer.objects.get(id=id)
         customer.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# --------------------------------------------------------------------------------------
+# dashboard
+
+@api_view()
+def customer_count(request):
+    count = Customer.objects\
+        .filter(account=request.query_params.get('account', None))\
+        .count()            
+    content = {'count': count}
+    return Response(content)

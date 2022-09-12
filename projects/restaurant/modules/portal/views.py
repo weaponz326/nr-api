@@ -1,14 +1,17 @@
+import datetime
 from django.shortcuts import render
-from django.db.models.functions import TruncDay
+from django.db.models.functions import TruncDate
 from django.db.models import Count
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, mixins, status, filters
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
 
 from .models import Rink
 from .serializers import RinkSerializer, RinkNestedSerializer
+from accounts.services import fillZeroDates
 
 
 # Create your views here.
@@ -60,3 +63,40 @@ class AllRinkView(generics.ListAPIView):
         if account is not None:
             queryset = queryset.filter(sender__id=account) | queryset.filter(recipient__id=account)
         return queryset
+
+# --------------------------------------------------------------------------------------
+# dashboard
+
+@api_view()
+def rink_share_count(request):
+    rink_in = Rink.objects\
+        .filter(recipient__id=request.query_params.get('account', None))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .count()
+    
+    rink_out = Rink.objects\
+        .filter(sender__id=request.query_params.get('account', None))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .count()
+                    
+    content = {'rink_in': rink_in, 'rink_out': rink_out}
+    return Response(content)
+
+@api_view()
+def rink_share_annotate(request):
+    rink_in_items = Rink.objects\
+        .filter(recipient__id=request.query_params.get('account', None))\
+        .annotate(date=TruncDate('created_at'))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .values('date').annotate(count=Count('id')).order_by('-date')
+    filled_rink_in_items = fillZeroDates(rink_in_items)
+
+    rink_out_items = Rink.objects\
+        .filter(sender__id=request.query_params.get('account', None))\
+        .annotate(date=TruncDate('created_at'))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .values('date').annotate(count=Count('id')).order_by('-date')
+    filled_rink_out_items = fillZeroDates(rink_out_items)
+
+    content = {'rink_in': filled_rink_in_items, 'rink_out': filled_rink_out_items}
+    return Response(content)

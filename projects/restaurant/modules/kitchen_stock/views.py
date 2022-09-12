@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db.models import Count
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
@@ -6,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
+from rest_framework.decorators import api_view
 
 from .models import StockItem
 from .serializers import StockItemSerializer
@@ -51,3 +53,23 @@ class StockItemDetailView(APIView):
         item = StockItem.objects.get(id=id)
         item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# --------------------------------------------------------------------------------------
+# dashboard
+
+@api_view()
+def stock_item_count(request):
+    count = StockItem.objects\
+        .filter(account=request.query_params.get('account', None))\
+        .count()            
+    content = {'count': count}
+    return Response(content)
+
+@api_view()
+def out_of_stock_count(request):
+    count = StockItem.objects\
+        .filter(account=request.query_params.get('account', None))\
+        .filter(quantity=0)\
+        .count()            
+    content = {'count': count}
+    return Response(content)

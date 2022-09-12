@@ -11,6 +11,7 @@ from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
+from rest_framework.decorators import api_view
 
 from .models import (
     Roster,
@@ -266,3 +267,13 @@ def get_roster_days(from_date, to_date):
     print(date_batch_objects)
     return date_batch_objects
     
+# --------------------------------------------------------------------------------------
+# dashboard
+
+@api_view()
+def roster_count(request):
+    count = Roster.objects\
+        .filter(account=request.query_params.get('account', None))\
+        .count()            
+    content = {'count': count}
+    return Response(content)

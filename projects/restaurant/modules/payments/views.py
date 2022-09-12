@@ -1,4 +1,8 @@
+import datetime
 from django.shortcuts import render
+from django.db.models import Count
+from django.db.models.functions import TruncDate
+from django.db.models import Sum
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
@@ -6,10 +10,12 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
+from rest_framework.decorators import api_view
 
 from .models import Payment
 from .serializers import PaymentDepthSerializer, PaymentSerializer
 from accounts.paginations import TablePagination
+from accounts.services import fillZeroDates
 
 
 # Create your views here.
@@ -51,3 +57,34 @@ class PaymentDetailView(APIView):
         payment = Payment.objects.get(id=id)
         payment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# --------------------------------------------------------------------------------------
+# dashboard
+
+@api_view()
+def payment_count(request):
+    count = Payment.objects\
+        .filter(account=request.query_params.get('account', None))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .count()           
+    content = {'count': count}
+    return Response(content)
+
+@api_view()
+def payment_total(request):
+    amount = Payment.objects\
+        .filter(account=request.query_params.get('account', None))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .aggregate(Sum('amount_paid'))                 
+    content = {'total': amount['amount_paid__sum']}
+    return Response(content)
+
+@api_view()
+def payment_annotate(request):
+    items = Payment.objects\
+        .filter(account=request.query_params.get('account', None))\
+        .annotate(date=TruncDate('created_at'))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .values('date').annotate(count=Sum('amount_paid')).order_by('-date')
+    filled_items = fillZeroDates(items)
+    return Response(filled_items)

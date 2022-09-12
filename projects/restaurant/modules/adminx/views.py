@@ -1,3 +1,4 @@
+import datetime
 import uuid
 
 from django.shortcuts import render
@@ -10,6 +11,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
+from rest_framework.decorators import api_view
 
 from .models import AccountUser, Access, Invitation
 from .serializers import AccountUserDepthSerializer, AccountUserSerializer, AccessSerializer, InvitationSerializer
@@ -140,6 +142,17 @@ class InvitationDetailView(APIView):
         access = Invitation.objects.get(id=id)
         access.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# --------------------------------------------------------------------------------------
+# dashboard
+
+@api_view()
+def account_user_count(request):
+    count = AccountUser.objects\
+        .filter(account=request.query_params.get('account', None))\
+        .count()            
+    content = {'count': count}
+    return Response(content)
 
 # ------------------------------------------------------------------------------------------
 # signals

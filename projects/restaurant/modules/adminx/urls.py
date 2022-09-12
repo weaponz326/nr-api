@@ -9,4 +9,6 @@ urlpatterns = [
     path('access/<id>', views.AccessDetailView.as_view()),
     path('invitation/', views.InvitationView.as_view()),
     path('invitation/<id>', views.InvitationDetailView.as_view()),
+
+    path('dashboard/account-user-count', views.account_user_count),
 ]

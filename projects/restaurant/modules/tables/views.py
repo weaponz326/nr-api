@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
+from rest_framework.decorators import api_view
 
 from .models import Table
 from .serializers import TableSerializer
@@ -51,3 +52,14 @@ class TableDetailView(APIView):
         table = Table.objects.get(id=id)
         table.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# --------------------------------------------------------------------------------------
+# dashboard
+
+@api_view()
+def table_count(request):
+    count = Table.objects\
+        .filter(account=request.query_params.get('account', None))\
+        .count()            
+    content = {'count': count}
+    return Response(content)

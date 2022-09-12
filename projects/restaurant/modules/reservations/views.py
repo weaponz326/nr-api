@@ -1,4 +1,7 @@
+import datetime
 from django.shortcuts import render
+from django.db.models import Count
+from django.db.models.functions import TruncDate
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
@@ -6,10 +9,12 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
+from rest_framework.decorators import api_view
 
 from .models import Reservation, ReservationTable
 from .serializers import ReservationDepthSerializer, ReservationSerializer, ReservationTableDepthSerializer, ReservationTableSerializer
 from accounts.paginations import TablePagination
+from accounts.services import fillZeroDates
 
 
 # Create your views here.
@@ -87,3 +92,25 @@ class ReservationTableDetailView(APIView):
         reservation_table = ReservationTable.objects.get(id=id)
         reservation_table.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# --------------------------------------------------------------------------------------
+# dashboard
+
+@api_view()
+def reservation_count(request):
+    count = Reservation.objects\
+        .filter(account=request.query_params.get('account', None))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .count()           
+    content = {'count': count}
+    return Response(content)
+
+@api_view()
+def reservation_annotate(request):
+    items = Reservation.objects\
+        .filter(account=request.query_params.get('account', None))\
+        .annotate(date=TruncDate('created_at'))\
+        .filter(created_at__lte=datetime.datetime.today(), created_at__gt=datetime.datetime.today()-datetime.timedelta(days=30))\
+        .values('date').annotate(count=Count('id')).order_by('-date')
+    filled_items = fillZeroDates(items)
+    return Response(filled_items)

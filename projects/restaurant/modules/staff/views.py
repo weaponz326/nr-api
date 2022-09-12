@@ -7,6 +7,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
 from rest_framework.parsers import MultiPartParser, FileUploadParser
+from rest_framework.decorators import api_view
 
 from .models import Staff
 from .serializers import StaffSerializer
@@ -55,3 +56,14 @@ class StaffDetailView(APIView):
         staff = Staff.objects.get(id=id)
         staff.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# --------------------------------------------------------------------------------------
+# dashboard
+
+@api_view()
+def staff_count(request):
+    count = Staff.objects\
+        .filter(account=request.query_params.get('account', None))\
+        .count()            
+    content = {'count': count}
+    return Response(content)
