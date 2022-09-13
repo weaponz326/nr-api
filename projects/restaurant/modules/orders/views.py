@@ -12,7 +12,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.decorators import api_view
 
 from .models import Order, OrderItem
-from .serializers import OrderDepthSerializer, OrderSerializer, OrderItemSerializer
+from .serializers import OrderDepthSerializer, OrderSerializer, OrderItemSerializer, OrderItemDepthSerializer
 from accounts.paginations import TablePagination
 from accounts.services import fillZeroDates
 
@@ -64,7 +64,7 @@ class OrderItemView(APIView):
     def get(self, request, format=None):
         order = self.request.query_params.get('order', None)
         item = OrderItem.objects.filter(order=order)
-        serializer = OrderItemSerializer(item, many=True)
+        serializer = OrderItemDepthSerializer(item, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
@@ -80,7 +80,7 @@ class OrderItemView(APIView):
 class OrderItemDetailView(APIView):
     def get(self, request, id, format=None):
         item = OrderItem.objects.get(id=id)
-        serializer = OrderItemSerializer(item)
+        serializer = OrderItemDepthSerializer(item)
         return Response(serializer.data)
 
     def put(self, request, id, format=None):

@@ -3,6 +3,7 @@ from rest_framework import serializers
 from .models import Order, OrderItem
 from modules.customers.serializers import CustomerSerializer
 from modules.tables.serializers import TableSerializer
+from modules.menu.serializers import MenuItemSerializer
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -43,7 +44,19 @@ class OrderDepthSerializer(serializers.ModelSerializer):
         ]
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = [
+            'id',
+            'created_at',
+            'order',
+            'menu_item',
+            'quantity',
+        ]
 
+class OrderItemDepthSerializer(serializers.ModelSerializer):
+    menu_item = MenuItemSerializer()
+    
     class Meta:
         model = OrderItem
         fields = [

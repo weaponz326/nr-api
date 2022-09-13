@@ -24,7 +24,7 @@ class Order(CustomBaseModel):
 
 class OrderItem(CustomBaseModel):
     order = models.ForeignKey(Order, to_field='id', on_delete=models.DO_NOTHING)
-    menu_item = models.ForeignKey(MenuItem, on_delete=models.DO_NOTHING)
+    menu_item = models.ForeignKey(MenuItem, to_field='id', on_delete=models.DO_NOTHING)
     quantity = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
